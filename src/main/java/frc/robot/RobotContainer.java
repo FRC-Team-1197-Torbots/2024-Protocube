@@ -6,10 +6,14 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 
+import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunShooter;
-import frc.robot.commands.ToggleShooter;
 import frc.robot.subsystems.ShooterProto;
+import frc.robot.subsystems.ShooterProto.ToggleShoot;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -30,6 +34,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final Trigger gamePieceStored = new Trigger(m_shooter::getBreakBeamState);
   //private final Trigger bButton = m_driverController.b();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -52,9 +57,11 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     //m_driverController.b().whileTrue(
-    m_driverController.a().whileTrue(new RunShooter(m_shooter));
+    m_driverController.a().whileTrue(new RunIntake(m_shooter));
+    //gamePieceStored.whileTrue(new RunCommand(() -> m_shooter.changeState(ToggleShoot.SHOOT), m_shooter));
 
-    m_driverController.b().onTrue(new ToggleShooter(m_shooter));
+    m_driverController.b().whileTrue(new RunShooter(m_shooter));
+    m_driverController.x().whileTrue(new RunCommand(() -> m_shooter.runIntake(0.9), m_shooter));
     /*m_driverController.b().whileTrue(
       new SequentialCommandGroup(new RunUp(m_exampleSubsystem))
       .alongWith(new WaitCommand(5))

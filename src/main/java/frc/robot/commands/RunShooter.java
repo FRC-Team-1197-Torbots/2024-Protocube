@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterProto;
+
 public class RunShooter extends Command{
     private final ShooterProto m_subsystem;
     public RunShooter(ShooterProto subsystem){
@@ -10,19 +11,27 @@ public class RunShooter extends Command{
     }
     @Override
     public void initialize(){
-      m_subsystem.runMotors(0.6);
+       
     }
     @Override
     public void execute(){
-        //m_subsystem.runMotors(0.9);
+        m_subsystem.runShooter(0.9);
+        if(m_subsystem.getBreakBeamState()){
+          m_subsystem.runShooter(0.9);
+        }
+        else if(!m_subsystem.getBreakBeamState()){
+          //m_subsystem.stopIntake();
+          //m_subsystem.stopShooter();
+        }
     }   
     @Override
     public void end(boolean interrupted) {
-      m_subsystem.stopMotors();
+      m_subsystem.stopShooter();
+      //m_subsystem.stopMotors();
     }
 
     @Override
     public boolean isFinished() {
-      return false;
+      return true;
     }
 }

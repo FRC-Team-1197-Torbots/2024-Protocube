@@ -25,5 +25,6 @@ public final class Constants {
 
   public static class DigitalInputConstants{
     public static final int LimitSwitch = 5;
+    public static final int BreakBeam = 3;
   }
 }
