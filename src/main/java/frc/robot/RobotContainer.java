@@ -6,6 +6,8 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 
+import frc.robot.commands.PushNote;
+import frc.robot.commands.ReverseIntake;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunShooter;
 import frc.robot.subsystems.ShooterProto;
@@ -57,11 +59,12 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     //m_driverController.b().whileTrue(
-    m_driverController.a().whileTrue(new RunIntake(m_shooter));
+    m_driverController.a().whileTrue(new RunIntake(m_shooter)); // LT
+    m_driverController.y().whileTrue(new ReverseIntake(m_shooter));
     //gamePieceStored.whileTrue(new RunCommand(() -> m_shooter.changeState(ToggleShoot.SHOOT), m_shooter));
 
-    m_driverController.b().whileTrue(new RunShooter(m_shooter));
-    m_driverController.x().whileTrue(new RunCommand(() -> m_shooter.runIntake(0.9), m_shooter));
+    m_driverController.b().whileTrue(new RunShooter(m_shooter)); // RT
+    m_driverController.x().onTrue(new PushNote(m_shooter)); // RB
     /*m_driverController.b().whileTrue(
       new SequentialCommandGroup(new RunUp(m_exampleSubsystem))
       .alongWith(new WaitCommand(5))

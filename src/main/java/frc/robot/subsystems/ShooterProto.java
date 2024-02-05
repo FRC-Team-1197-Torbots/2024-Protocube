@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DigitalInputConstants;
 import frc.robot.Constants.SparkConstants;
+import frc.robot.commands.PushNote;
 
 public class ShooterProto extends SubsystemBase{
     private CANSparkMax Motor1;
@@ -15,18 +16,20 @@ public class ShooterProto extends SubsystemBase{
     private CANSparkMax Motor3;
     private DigitalInput BreakBeam;
     public enum ToggleShoot{
-        INTAKE, SHOOT
+        INTAKE, SHOOT, IDLE
     }
-    private ToggleShoot m_ToggleShoot = ToggleShoot.INTAKE;
+    private ToggleShoot m_ToggleShoot = ToggleShoot.IDLE;
     public ShooterProto(){
         Motor1 = new CANSparkMax(SparkConstants.MotorA, MotorType.kBrushless);
         Motor2 = new CANSparkMax(SparkConstants.MotorB, MotorType.kBrushless);
         Motor3 = new CANSparkMax(SparkConstants.MotorC, MotorType.kBrushless);
         BreakBeam = new DigitalInput(DigitalInputConstants.BreakBeam);
+        
     }
     public void runShooter(double spd){
         Motor1.set(spd);
         Motor2.set(-spd);
+        System.out.println();
         //Motor3.set(-spd);
     }
     public void runIntake(double spd){
@@ -48,12 +51,14 @@ public class ShooterProto extends SubsystemBase{
     public void runState(){
         switch(m_ToggleShoot){
             case INTAKE:
-                runIntake(0.4);
-                stopShooter();
+                runIntake(0.23);
                 break;
             case SHOOT:
-                runShooter(0.9);
-                stopIntake();
+                runShooter(0.23); //.9
+                // runIntake(0.03); // prevent note from sliding out
+                break;
+            case IDLE:
+                runShooter(0.23); //.4
                 break;
         }
     }
@@ -68,9 +73,11 @@ public class ShooterProto extends SubsystemBase{
 
     @Override
     public void periodic(){
-        System.out.println(!BreakBeam.get());
+        // System.out.println(!BreakBeam.get());
+
+        runState();
         SmartDashboard.putBoolean("BreakBeam", getBreakBeamState());
-        SmartDashboard.putNumber("Motor1 Speed", Motor1.get());
-        SmartDashboard.putNumber("Motor2 Speed", Motor2.get());
+        SmartDashboard.putNumber("Motor1 Speed", Motor1.getEncoder().getVelocity()); //Positive Speed
+        SmartDashboard.putNumber("Motor2 Speed", Math.abs(Motor2.getEncoder().getVelocity())); //Negative Speed
     }
 }
